@@ -20,7 +20,8 @@ micrófono ─► Whisper local ─► Claude + web_search ─► edge-tts ─�
 3. **Voz** (`rita/voz.py`): `edge-tts`, voz `es-AR-ElenaNeural`, velocidad `+8%`. Dos hilos: uno sintetiza la frase N+1 mientras el otro reproduce la N con `afplay` (macOS), `ffplay` o `mpv`. Si edge-tts falla, cae a la voz `say` del sistema. `callar()` interrumpe todo lo pendiente.
 4. **Texto** (`rita/texto.py`): `Segmentador` parte el stream por frases (mínimo 25 caracteres para no cortar "Sí." suelto); `limpiar_para_voz` saca markdown, URLs y viñetas.
 5. **Registro** (`rita/registro.py`): una línea JSON por intervención en `logs/AAAA-MM-DD.jsonl` (hora, lo que dijo el piso, respuesta, segundos). `logs/` está gitignored.
-6. **Prompt** (`rita/prompt.py` + `prompts/rita.md` + `config/programa.yaml`): la plantilla tiene variables `{{asi}}` que se completan con el YAML del programa. La fecha y hora de Buenos Aires van en un **segundo bloque** del system prompt, separado del bloque grande que lleva `cache_control`, para no romper el caché.
+6. **Web** (`rita/web.py` + `rita/estatico/index.html`): `uv run -m rita --web` sirve una página (Starlette + uvicorn) para hablarle desde el celular o la compu como a un asistente de voz. Mismo `Cerebro` y mismo `Registro` que la consola. El navegador escucha (Web Speech API si la tiene; si no, graba y `POST /api/transcribir` lo pasa por Whisper vía `faster_whisper.audio.decode_audio`) y manda el texto a `POST /api/preguntar`, que responde por server-sent events: `frase` (texto apenas se cierra), `audio` (MP3 de edge-tts en base64, o `null` si falló y entonces lo lee la voz del navegador), `fin`, `error`, `listo`. Un candado permite una charla a la vez (409 si está ocupada); lo suelta el hilo del cerebro al terminar, aunque la página corte. Acceso por código (`RITA_CODIGO`, o uno aleatorio impreso al arrancar) verificado en el servidor, que deja una cookie. La página tiene "Manos libres" (vuelve a escuchar sola al terminar de hablar). El micrófono del navegador necesita HTTPS o localhost: para el celular, túnel de Cloudflare (ver README). Tests en `tests/test_web.py` con cerebro y voz inyectados.
+7. **Prompt** (`rita/prompt.py` + `prompts/rita.md` + `config/programa.yaml`): la plantilla tiene variables `{{asi}}` que se completan con el YAML del programa. La fecha y hora de Buenos Aires van en un **segundo bloque** del system prompt, separado del bloque grande que lleva `cache_control`, para no romper el caché.
 
 ## Cómo se corre
 
@@ -32,13 +33,14 @@ uv run -m rita --texto --mudo            # probar el personaje sin micrófono ni
 uv run -m rita --texto                   # escribirle, responde por voz
 uv run -m rita                           # modo radio: Enter para hablar, Enter para cortar
 uv run -m rita --auto                    # detección automática de voz
+uv run -m rita --web                     # página para hablarle desde el celular (--sin-whisper para no cargar Whisper)
 uv run -m rita --prompt                  # ver el system prompt armado
 uv run -m rita --probar-voz "Hola"       # probar la voz
 uv run -m rita --dispositivos            # listar micrófonos
 uv run pytest -q                         # tests (no llaman a la API)
 ```
 
-Configuración por variables de entorno en `.env` (documentadas en `.env.example`): `ANTHROPIC_API_KEY` (obligatoria), `RITA_MODELO`, `RITA_ESFUERZO`, `RITA_MAX_BUSQUEDAS`, `RITA_VOZ`, `RITA_VELOCIDAD_VOZ`, `RITA_WHISPER`, `RITA_MIC`, `RITA_UMBRAL`, `RITA_SILENCIO`.
+Configuración por variables de entorno en `.env` (documentadas en `.env.example`): `ANTHROPIC_API_KEY` (obligatoria), `RITA_MODELO`, `RITA_ESFUERZO`, `RITA_MAX_BUSQUEDAS`, `RITA_VOZ`, `RITA_VELOCIDAD_VOZ`, `RITA_WHISPER`, `RITA_MIC`, `RITA_UMBRAL`, `RITA_SILENCIO`, `RITA_CODIGO`, `RITA_PUERTO`.
 
 ## Decisiones técnicas y por qué (no las deshagas sin motivo)
 
@@ -53,7 +55,9 @@ Configuración por variables de entorno en `.env` (documentadas en `.env.example
 ## Estado actual (2026-10-26)
 
 Hecho y verificado:
-- Tests: 11 pasan local y en CI.
+- Tests: 18 pasan local (11 originales + 7 del modo web).
+- Modo web: la página se probó en el navegador con un cerebro falso y la voz real de edge-tts (puerta, streaming por frases, audio en orden, cortar, nueva charla). No se probó todavía con Claude real ni el micrófono desde un celular por túnel.
+- Hubo una versión de Rita como artefacto de claude.ai: sin búsqueda, sin micrófono en la app de Claude, voces del navegador. El modo web la reemplaza; el personaje ahí es copia de `prompts/rita.md` y no se mantiene.
 - Voz: edge-tts sintetiza bien; Whisper `tiny` transcribió esa misma voz sin errores (ida y vuelta completa).
 - SDK: la forma del pedido a la API es aceptada (con clave falsa la API devolvió 401, no un error de parámetros).
 

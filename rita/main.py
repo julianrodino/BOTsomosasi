@@ -23,6 +23,9 @@ def _args() -> argparse.Namespace:
     modo = p.add_mutually_exclusive_group()
     modo.add_argument("--texto", action="store_true", help="escribirle en vez de hablarle (responde por voz igual)")
     modo.add_argument("--auto", action="store_true", help="detección automática de voz, sin apretar Enter")
+    modo.add_argument("--web", action="store_true", help="sirve una página para hablarle desde el celular o la compu")
+    p.add_argument("--puerto", type=int, help="puerto del modo web (por defecto RITA_PUERTO o 8765)")
+    p.add_argument("--sin-whisper", action="store_true", help="modo web sin Whisper: solo el reconocimiento del navegador")
     p.add_argument("--mudo", action="store_true", help="no reproduce audio, solo imprime")
     p.add_argument("--sin-registro", action="store_true", help="no guarda la charla en logs/")
     p.add_argument("--probar-voz", metavar="FRASE", help="dice una frase y sale (para probar la voz)")
@@ -59,8 +62,24 @@ def main() -> int:
 
     system = construir_system(ajustes)
     cerebro = Cerebro(ajustes, system)
-    locutora = Locutora(ajustes, muda=args.mudo)
     registro = Registro(activo=not args.sin_registro)
+
+    if args.web:
+        from .web import servir
+
+        oido = None
+        if not args.sin_whisper:
+            from .oido import Oido
+
+            oido = Oido(ajustes)
+        print(BANNER)
+        print(f"  modelo {ajustes.modelo} · esfuerzo {ajustes.esfuerzo} · voz {ajustes.voz}"
+              + ("" if oido is None else f" · whisper {ajustes.whisper}"))
+        if registro.activo:
+            print(f"  registro en {registro.archivo.relative_to(registro.carpeta.parent)}")
+        return servir(ajustes, cerebro, registro=registro, oido=oido, puerto=args.puerto)
+
+    locutora = Locutora(ajustes, muda=args.mudo)
 
     oido = None
     if not args.texto:

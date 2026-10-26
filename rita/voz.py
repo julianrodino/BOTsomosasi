@@ -20,6 +20,20 @@ from .config import Ajustes
 _FIN = object()
 
 
+async def sintetizar_mp3(texto: str, voz: str, velocidad: str) -> bytes:
+    """Sintetiza una frase con edge-tts y devuelve el MP3 en memoria (lo usa el modo web)."""
+    import edge_tts
+
+    com = edge_tts.Communicate(texto, voice=voz, rate=velocidad)
+    partes: list[bytes] = []
+    async for trozo in com.stream():
+        if trozo["type"] == "audio":
+            partes.append(trozo["data"])
+    if not partes:
+        raise RuntimeError("edge-tts no devolvió audio")
+    return b"".join(partes)
+
+
 def _reproductor() -> list[str] | None:
     if shutil.which("afplay"):
         return ["afplay"]
