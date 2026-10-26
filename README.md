@@ -35,19 +35,19 @@ Pegá tu `ANTHROPIC_API_KEY` en `.env`. Después completá [config/programa.yaml
 Probá que la voz suene:
 
 ```bash
-uv run rita --probar-voz "Hola, soy Rita, probando la voz del piso."
+uv run -m rita --probar-voz "Hola, soy Rita, probando la voz del piso."
 ```
 
 ## Uso
 
 | Comando | Qué hace |
 |---|---|
-| `uv run rita` | Modo radio: Enter para hablarle, Enter para cortar. Rita contesta por voz. |
-| `uv run rita --auto` | Sin teclado: detecta cuando alguien habla y corta tras un silencio. Calibrar con `RITA_UMBRAL`. |
-| `uv run rita --texto` | Escribirle en vez de hablarle. Sirve para probar el personaje sin micrófono. |
-| `uv run rita --texto --mudo` | Solo texto, sin audio. Lo más barato para iterar el prompt. |
-| `uv run rita --prompt` | Imprime el system prompt ya armado con los datos del programa. |
-| `uv run rita --dispositivos` | Lista los micrófonos disponibles. |
+| `uv run -m rita` | Modo radio: Enter para hablarle, Enter para cortar. Rita contesta por voz. |
+| `uv run -m rita --auto` | Sin teclado: detecta cuando alguien habla y corta tras un silencio. Calibrar con `RITA_UMBRAL`. |
+| `uv run -m rita --texto` | Escribirle en vez de hablarle. Sirve para probar el personaje sin micrófono. |
+| `uv run -m rita --texto --mudo` | Solo texto, sin audio. Lo más barato para iterar el prompt. |
+| `uv run -m rita --prompt` | Imprime el system prompt ya armado con los datos del programa. |
+| `uv run -m rita --dispositivos` | Lista los micrófonos disponibles. |
 | `... --sin-registro` | No guarda la charla en `logs/`. |
 
 La primera vez que arranca en modo voz descarga el modelo de Whisper a `modelos/` (unos 500 MB para `small`).
@@ -68,7 +68,11 @@ Todo se configura por variables de entorno en `.env`; están documentadas en [.e
 
 - El personaje vive en [prompts/rita.md](prompts/rita.md). Las variables `{{asi}}` se completan desde el YAML; el resto es texto libre.
 - Para cambiar cómo se nombra a los conductores, las secciones o la historia, tocá solo [config/programa.yaml](config/programa.yaml).
-- Chequeá cómo quedó con `uv run rita --prompt`.
+- Chequeá cómo quedó con `uv run -m rita --prompt`.
+
+## Si `rita` no arranca
+
+El comando es `uv run -m rita` y no `uv run rita` a propósito: en macOS reciente el sistema marca como ocultos los archivos `.pth` del entorno virtual y Python los ignora, con lo que el atajo `rita` instalado por uv falla con `No module named 'rita'`. `-m rita` carga el paquete desde la carpeta del proyecto y no depende de eso. Hay que correrlo parado en la raíz del repo.
 
 ## Tests
 
@@ -90,7 +94,7 @@ rita/oido.py           micrófono + Whisper
 rita/voz.py            edge-tts + reproducción encadenada
 rita/texto.py          corte por frases y limpieza para voz
 rita/registro.py       log de lo dicho al aire (logs/, un archivo por día)
-rita/main.py           el comando `rita`
+rita/main.py           la interfaz de línea de comandos (`uv run -m rita`)
 tests/                 pytest
 ```
 
