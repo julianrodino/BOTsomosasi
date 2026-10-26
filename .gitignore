@@ -15,3 +15,6 @@ modelos/
 
 # macOS
 .DS_Store
+
+# registro de lo dicho al aire
+logs/

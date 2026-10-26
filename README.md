@@ -48,10 +48,13 @@ uv run rita --probar-voz "Hola, soy Rita, probando la voz del piso."
 | `uv run rita --texto --mudo` | Solo texto, sin audio. Lo más barato para iterar el prompt. |
 | `uv run rita --prompt` | Imprime el system prompt ya armado con los datos del programa. |
 | `uv run rita --dispositivos` | Lista los micrófonos disponibles. |
+| `... --sin-registro` | No guarda la charla en `logs/`. |
 
 La primera vez que arranca en modo voz descarga el modelo de Whisper a `modelos/` (unos 500 MB para `small`).
 
 Mientras Rita habla, apretar Enter (o empezar a hablar, en `--auto`) la interrumpe.
+
+Cada intervención queda anotada en `logs/AAAA-MM-DD.jsonl` (hora, lo que dijo el piso, lo que contestó Rita y cuánto tardó). Sirve para revisar el programa y para afinar el prompt.
 
 ## Ajustes
 
@@ -86,6 +89,7 @@ rita/cerebro.py        Claude + búsqueda web + memoria de la charla
 rita/oido.py           micrófono + Whisper
 rita/voz.py            edge-tts + reproducción encadenada
 rita/texto.py          corte por frases y limpieza para voz
+rita/registro.py       log de lo dicho al aire (logs/, un archivo por día)
 rita/main.py           el comando `rita`
 tests/                 pytest
 ```
@@ -94,4 +98,3 @@ tests/                 pytest
 
 - Entrada de audio desde la consola de la radio (hoy toma el micrófono del sistema).
 - Interrupción por voz mientras habla en modo push-to-talk.
-- Registro de lo que se dijo al aire (transcripción + respuestas) por programa.

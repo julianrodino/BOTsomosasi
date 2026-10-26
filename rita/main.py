@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+import time
 
 import anthropic
 
@@ -23,6 +24,7 @@ def _args() -> argparse.Namespace:
     modo.add_argument("--texto", action="store_true", help="escribirle en vez de hablarle (responde por voz igual)")
     modo.add_argument("--auto", action="store_true", help="detección automática de voz, sin apretar Enter")
     p.add_argument("--mudo", action="store_true", help="no reproduce audio, solo imprime")
+    p.add_argument("--sin-registro", action="store_true", help="no guarda la charla en logs/")
     p.add_argument("--probar-voz", metavar="FRASE", help="dice una frase y sale (para probar la voz)")
     p.add_argument("--dispositivos", action="store_true", help="lista los micrófonos y sale")
     p.add_argument("--prompt", action="store_true", help="imprime el system prompt armado y sale")
@@ -53,10 +55,12 @@ def main() -> int:
         return 0
 
     from .cerebro import Cerebro
+    from .registro import Registro
 
     system = construir_system(ajustes)
     cerebro = Cerebro(ajustes, system)
     locutora = Locutora(ajustes, muda=args.mudo)
+    registro = Registro(activo=not args.sin_registro)
 
     oido = None
     if not args.texto:
@@ -67,6 +71,8 @@ def main() -> int:
 
     print(BANNER)
     print(f"  modelo {ajustes.modelo} · esfuerzo {ajustes.esfuerzo} · voz {ajustes.voz}")
+    if registro.activo:
+        print(f"  registro en {registro.archivo.relative_to(registro.carpeta.parent)}")
     if args.texto:
         print("  Escribí y Enter. Comandos: /reset (olvida la charla), /salir")
     elif args.auto:
@@ -107,8 +113,10 @@ def main() -> int:
                 print(frase, end=" ", flush=True)
                 locutora.decir(frase)
 
+            inicio = time.monotonic()
             try:
-                cerebro.responder(dicho, al_recibir_frase)
+                respuesta = cerebro.responder(dicho, al_recibir_frase)
+                registro.anotar(dicho, respuesta, segundos=time.monotonic() - inicio)
             except anthropic.AuthenticationError:
                 print("\n[error] la ANTHROPIC_API_KEY es inválida (ver .env.example).", file=sys.stderr)
                 return 1
