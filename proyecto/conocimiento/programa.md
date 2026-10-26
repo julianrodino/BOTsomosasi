@@ -6,7 +6,7 @@ Lo que está entre corchetes falta completar. Rita funciona igual con los corche
 
 - Nombre del programa: SomosAsi
 - Qué es: programa de radio y stream en vivo
-- Días y horario: [DÍAS Y HORARIO, por ejemplo "lunes a viernes de 18 a 20"]
+- Días y horario: lunes, miércoles y viernes de 10 a 12 (aproximadamente)
 - Emisora o plataforma: [EMISORA / PLATAFORMA, por ejemplo "FM tal 95.1 y YouTube"]
 - Conductores: [NOMBRES]
 - Producción: [NOMBRE]
