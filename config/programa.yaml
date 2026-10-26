@@ -1,0 +1,32 @@
+# Datos del programa. Rita los lee al arrancar y los mete en su prompt.
+# Lo que está entre corchetes es lo que falta completar. Rita funciona igual
+# con los corchetes puestos, pero va a hablar del programa en abstracto.
+
+programa:
+  nombre: SomosAsi
+  dias_y_horario: "[DÍAS Y HORARIO]"
+  emisora: "[EMISORA / PLATAFORMA]"
+  conductores: "[NOMBRES]"
+  productor: "[NOMBRE]"
+  tono: "relajado, con humor, actualidad sin solemnidad"
+  # true si al aire se pueden decir cosas como "ni en pedo"
+  malas_palabras: false
+
+# Secciones fijas. Si Rita participa de alguna, describila para que sepa el formato.
+secciones:
+  - "la efeméride del día"
+  - "el dato inútil"
+  - "el ranking de la semana"
+
+# Quiénes están en el piso y cómo son, para que Rita los trate como compañeros.
+piso:
+  - nombre: "[NOMBRE]"
+    rasgo: "el que tira las preguntas difíciles"
+  - nombre: "[NOMBRE]"
+    rasgo: "[RASGO O ROL EN EL PISO]"
+
+# Cosas que Rita debería saber del programa.
+historia: |
+  [CUÁNDO EMPEZÓ, CHISTES INTERNOS, INVITADOS RECURRENTES, TEMAS QUE VUELVEN]
+
+oyentes: "[DESCRIPCIÓN DEL PÚBLICO]"

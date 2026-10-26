@@ -1,0 +1,17 @@
+# secretos
+.env
+
+# entorno y caches
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+
+# modelos de Whisper descargados (pesan cientos de MB)
+modelos/
+
+# macOS
+.DS_Store
