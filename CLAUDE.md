@@ -6,7 +6,7 @@ Leé esto entero antes de tocar nada. Es el estado real del proyecto al 2026-10-
 
 **Rita** es la compañera de piso con inteligencia artificial de **SomosAsi**, un programa de radio y stream en vivo. Está al aire: los conductores le hablan por micrófono, ella busca en internet lo que haga falta y contesta por voz, con voz de mujer y en español rioplatense. Es un personaje (porteña, treinta y pico, cabeza de productora de radio, irónica, memoriosa), no un asistente.
 
-Dueño del proyecto: Julián Rodino. Repo: https://github.com/julianrodino/BOTsomosasi (privado, rama `main`, CI con pytest en GitHub Actions).
+Dueño del proyecto: Julián Rodino. Repo: https://github.com/julianrodino/BOTsomosasi (rama `main`, CI con pytest en GitHub Actions).
 
 ## Cómo funciona (pipeline)
 
@@ -57,9 +57,9 @@ Hecho y verificado:
 - Voz: edge-tts sintetiza bien; Whisper `tiny` transcribió esa misma voz sin errores (ida y vuelta completa).
 - SDK: la forma del pedido a la API es aceptada (con clave falsa la API devolvió 401, no un error de parámetros).
 
-**No verificado todavía: una conversación real con Claude.** El `.env` del proyecto tenía solo `GEMINI_API_KEY` (archivo del 22 de octubre). Julián dijo dos veces que guardó `ANTHROPIC_API_KEY` pero el archivo nunca cambió: probablemente el editor guardó en otro lado o no guardó. Antes de probar en vivo, confirmar con `grep -c '^ANTHROPIC_API_KEY=' .env` (tiene que dar 1). Nunca imprimir ni pegar el valor de la clave en el chat.
+**No verificado todavía: una conversación real con Claude.** Hace falta `ANTHROPIC_API_KEY` en `.env` (confirmar con `grep -c '^ANTHROPIC_API_KEY=' .env`, tiene que dar 1). Nunca imprimir ni pegar el valor de la clave.
 
-Pendiente de completar por Julián: los corchetes de `config/programa.yaml` (horario, emisora, conductores, rasgos del piso, historia, público).
+Pendiente de completar: los corchetes de `config/programa.yaml` (horario, emisora, conductores, rasgos del piso, historia, público).
 
 ## Pendientes / ideas
 
