@@ -18,3 +18,6 @@ modelos/
 
 # registro de lo dicho al aire
 logs/
+
+# worktrees de la app de Claude
+.claude/worktrees/

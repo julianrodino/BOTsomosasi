@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import threading
 from typing import Callable
 
 import anthropic
@@ -24,6 +25,7 @@ class Cerebro:
         self.system = system
         self.client = anthropic.Anthropic()
         self.historial: list[dict] = []
+        self._cortado = threading.Event()
         self.tools = [
             {
                 "type": "web_search_20260209",
@@ -41,6 +43,10 @@ class Cerebro:
     def olvidar(self) -> None:
         self.historial.clear()
 
+    def cortar(self) -> None:
+        """Interrumpe la respuesta en curso (desde otro hilo). Lo dicho hasta ahí queda en el historial."""
+        self._cortado.set()
+
     def responder(self, dicho: str, al_recibir_frase: Callable[[str], None] | None = None) -> str:
         """Manda lo que dijeron en el piso y devuelve la respuesta completa de Rita.
 
@@ -49,6 +55,7 @@ class Cerebro:
         """
         self.historial.append({"role": "user", "content": dicho})
         self._recortar()
+        self._cortado.clear()
 
         partes: list[str] = []
 
@@ -79,7 +86,11 @@ class Cerebro:
                 fallbacks="default",
             ) as stream:
                 for trozo in stream.text_stream:
+                    if self._cortado.is_set():
+                        break
                     segmentador.alimentar(trozo)
+                if self._cortado.is_set():
+                    break  # al salir del `with` se cierra el stream y Claude deja de generar
                 final = stream.get_final_message()
 
             if final.stop_reason == "pause_turn":

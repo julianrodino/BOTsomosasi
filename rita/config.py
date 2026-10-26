@@ -44,6 +44,10 @@ class Ajustes:
     microfono: str | None = field(default_factory=lambda: os.getenv("RITA_MIC") or None)
     silencio_corte: float = field(default_factory=lambda: float(os.getenv("RITA_SILENCIO", "1.0")))
 
+    # Modo web (`rita --web`)
+    codigo_web: str | None = field(default_factory=lambda: (os.getenv("RITA_CODIGO") or "").strip() or None)
+    puerto_web: int = field(default_factory=lambda: int(os.getenv("RITA_PUERTO", "8765")))
+
     # Archivos
     prompt_md: Path = RAIZ / "prompts" / "rita.md"
     programa_yaml: Path = RAIZ / "config" / "programa.yaml"

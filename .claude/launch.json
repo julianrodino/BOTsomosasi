@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "rita-web",
+      "runtimeExecutable": "uv",
+      "runtimeArgs": ["run", "-m", "rita", "--web", "--sin-whisper"],
+      "port": 8765
+    }
+  ]
+}
