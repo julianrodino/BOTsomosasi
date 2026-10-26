@@ -4,7 +4,7 @@
 
 programa:
   nombre: SomosAsi
-  dias_y_horario: "[DÍAS Y HORARIO]"
+  dias_y_horario: "lunes, miércoles y viernes de diez a doce, más o menos"
   emisora: "[EMISORA / PLATAFORMA]"
   conductores: "[NOMBRES]"
   productor: "[NOMBRE]"
