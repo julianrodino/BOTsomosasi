@@ -9,6 +9,9 @@ programa:
   conductores: "[NOMBRES]"
   productor: "[NOMBRE]"
   tono: "relajado, con humor, actualidad sin solemnidad"
+  # Con qué frase arranca Rita cada vez que saluda (apertura del programa,
+  # cuando le dicen "hola", cuando vuelve de un corte).
+  saludo: "Hola DBF STUDIO"
   # true si al aire se pueden decir cosas como "ni en pedo"
   malas_palabras: false
 

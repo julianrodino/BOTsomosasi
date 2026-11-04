@@ -14,6 +14,16 @@ def test_el_prompt_del_repo_se_arma_sin_variables_sueltas():
     assert "SomosAsi" in system
 
 
+def test_el_saludo_del_programa_queda_en_el_prompt():
+    system = construir_system(Ajustes())
+    assert 'arrancás siempre con "Hola DBF STUDIO"' in system
+
+
+def test_el_saludo_se_toma_del_yaml_y_tiene_valor_por_defecto():
+    assert renderizar("{{saludo}}", {"programa": {"saludo": "Hola Radio X"}}) == "Hola Radio X"
+    assert renderizar("{{saludo}}", {"programa": {}}) == "Hola DBF STUDIO"
+
+
 def test_renderizar_mete_los_datos_del_programa():
     programa = {
         "programa": {
