@@ -46,6 +46,7 @@ def variables(programa: dict) -> dict[str, str]:
         "conductores": str(p.get("conductores", "")),
         "productor": str(p.get("productor", "")),
         "tono": str(p.get("tono", "")),
+        "saludo": str(p.get("saludo", "Hola DBF STUDIO")).strip() or "Hola DBF STUDIO",
         "secciones": _lista_hablada([str(s) for s in programa.get("secciones") or []]),
         "piso": piso_txt,
         "historia": historia or "todavía no me contaron la historia del programa.",
